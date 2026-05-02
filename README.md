@@ -1,54 +1,144 @@
-# Operation Sentinel: Event-Driven AWS Security Governance Platform
+# Operation Sentinel: AWS Security Governance Platform
 
-## Executive Summary
+An event-driven security automation platform that detects risky S3 public access changes and remediates them in seconds — without human intervention.
 
-Operation Sentinel is a cloud-native AWS security governance platform that detects risky S3 configuration changes, automatically restores public access protections, records structured audit evidence, and validates infrastructure through security-focused CI/CD controls.
+---
 
-The project demonstrates how native AWS services can be used to build a self-healing security control that reduces manual response dependency, improves audit readiness, and enforces cloud storage governance through Infrastructure as Code.
+## Problem
 
-## Business Use Case
+Cloud environments move faster than manual security review. A single `DeleteBucketPublicAccessBlock` call can expose sensitive data for hours before a human notices. For regulated financial environments, delayed remediation is a compliance failure, not just an operational one.
 
-Organizations operating in fast-moving cloud environments cannot rely only on manual reviews to identify every misconfigured resource. Public storage exposure, delayed incident response, and inconsistent infrastructure deployment create operational, financial, and regulatory risk.
+## Solution
 
-Operation Sentinel addresses that problem by creating an automated security control loop:
+Operation Sentinel closes that gap with a fully automated control loop: detect → remediate → audit → alert. Every remediation is logged, structured, and traceable. The infrastructure itself is versioned and policy-scanned before deployment.
 
-1. Detect risky S3 public access configuration changes.
-2. Trigger an automated remediation workflow.
-3. Restore S3 Block Public Access settings.
-4. Notify the security team.
-5. Record structured audit evidence.
-6. Provide dashboard visibility.
-7. Validate the infrastructure code through CI/CD security scanning.
+---
 
-This design is especially relevant for businesses operating in regulated or security-sensitive environments where cloud misconfigurations can create material risk.
+## Architecture
 
-## Architecture Overview
+Risky S3 API call
+→ CloudTrail (event capture)
+→ EventBridge (pattern match)
+→ Lambda (automated remediation)
+→ S3 Block Public Access restored
+→ DynamoDB (structured audit record)
+→ SNS (security alert)
+→ CloudWatch (operational visibility)
 
-Operation Sentinel uses CloudTrail, EventBridge, Lambda, S3, DynamoDB, SNS, CloudWatch, Terraform, GitHub Actions, and Trivy.
+---
 
-![Operation Sentinel Architecture](architecture/operation-sentinel-architecture.png)
+## Stack
 
-## Core Services
-
-| Service | Purpose |
+| Layer | Service |
 |---|---|
-| Amazon S3 | Monitored storage resource and CloudTrail log destination |
-| AWS CloudTrail | Captures AWS API activity for security-relevant events |
-| Amazon EventBridge | Detects risky S3 configuration changes from CloudTrail events |
-| AWS Lambda | Performs automated remediation |
-| Amazon DynamoDB | Stores structured remediation audit records |
-| Amazon SNS | Sends security notifications |
-| Amazon CloudWatch | Provides logs and dashboard visibility |
-| AWS IAM | Enforces least-privilege access for the remediation function |
-| Terraform | Defines the full environment as Infrastructure as Code |
-| GitHub Actions | Runs CI/CD validation |
-| Trivy | Performs IaC misconfiguration scanning |
+| Detection | AWS CloudTrail, Amazon EventBridge |
+| Remediation | AWS Lambda (Python) |
+| Audit | Amazon DynamoDB |
+| Alerting | Amazon SNS |
+| Observability | Amazon CloudWatch Logs + Dashboard |
+| Governance | Terraform, GitHub Actions, Trivy |
 
-## Detection Layer
+---
 
-CloudTrail records AWS management-plane API activity. EventBridge evaluates those events and matches security-relevant S3 actions.
+## Detection
 
-The main validation event for this project is:
+CloudTrail captures all management-plane API activity. EventBridge matches the following security-relevant S3 events:
 
-```text
-DeleteBucketPublicAccessBlock
+- `DeleteBucketPublicAccessBlock` *(primary validated trigger)*
+- Bucket policy modifications
+- ACL changes
+
+---
+
+## Remediation
+
+The Lambda responder extracts the affected bucket from the CloudTrail event and reapplies all four Block Public Access controls:
+
+```python
+BlockPublicAcls       = True
+IgnorePublicAcls      = True
+BlockPublicPolicy     = True
+RestrictPublicBuckets = True
+```
+
+The execution role is scoped to least privilege — only the permissions required to remediate the monitored bucket, write audit records, publish alerts, and log execution.
+
+---
+
+## Observability
+
+- **CloudWatch Logs** — structured execution output per remediation event
+- **DynamoDB** — durable audit records with event ID, timestamp, bucket name, event name, and remediation outcome
+- **SNS** — immediate security alert on remediation trigger
+- **CloudWatch Dashboard** — centralized visibility into remediation frequency and status
+
+---
+
+## Governance
+
+The full platform is defined in Terraform. The GitHub Actions CI/CD pipeline enforces:
+
+1. `terraform fmt` — format validation
+2. `terraform init` + `terraform validate` — configuration integrity
+3. `trivy` — infrastructure-as-code security scan
+
+No infrastructure ships without passing all three gates.
+
+---
+
+## Validation
+
+Validated by intentionally invoking `DeleteBucketPublicAccessBlock` on the monitored bucket.
+
+**Result:**
+
+remediation_status = success
+
+EventBridge matched the CloudTrail event, Lambda restored all four Block Public Access settings within seconds, DynamoDB recorded the structured audit entry, and SNS delivered the security notification.
+
+---
+
+## Security Design Principles
+
+- Event-driven detection — no polling, no cron
+- Automated remediation — zero human dependency for known violations
+- Least-privilege IAM — scoped per action, not per service
+- Structured audit evidence — DynamoDB records survive log retention windows
+- IaC-only infrastructure — no manual console provisioning
+- CI/CD policy gates — Trivy scans before any deployment
+
+---
+
+## Scope and Limitations
+
+This implementation targets a single AWS account and one monitored S3 bucket. It is intentionally scoped as a focused, demonstrable security control — not a full organizational rollout.
+
+Production expansion paths include AWS Config custom rules, Security Hub integration, IAM privilege escalation detection, multi-account deployment via AWS Organizations, and organization-level SCP guardrails.
+
+---
+
+## Repository Structure
+
+aws-security-governance-sentinel/
+├── .github/workflows/security-iac.yaml
+├── infra/
+│   ├── cloudtrail.tf
+│   ├── cloudwatch.tf
+│   ├── dynamodb.tf
+│   ├── eventbridge.tf
+│   ├── iam.tf
+│   ├── lambda.tf
+│   ├── outputs.tf
+│   ├── providers.tf
+│   ├── s3.tf
+│   ├── sns.tf
+│   ├── terraform.tfvars.example
+│   └── variables.tf
+├── lambda/
+│   ├── requirements.txt
+│   └── sentinel_remediator.py
+├── policies/
+│   ├── opa/
+│   └── trivy.yaml
+└── README.md
+
