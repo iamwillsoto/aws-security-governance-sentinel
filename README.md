@@ -115,6 +115,8 @@ This implementation targets a single AWS account and one monitored S3 bucket. It
 
 Production expansion paths include AWS Config custom rules, Security Hub integration, IAM privilege escalation detection, multi-account deployment via AWS Organizations, and organization-level SCP guardrails.
 
+This implementation uses AWS-managed encryption for SNS and SSE-S3 for S3 buckets. Customer-managed KMS keys are identified as a production hardening enhancement and are tracked through Trivy policy exceptions.
+
 ---
 
 ## Repository Structure

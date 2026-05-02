@@ -1,5 +1,6 @@
 resource "aws_sns_topic" "alerts" {
-  name = "${var.project_name}-security-alerts"
+  name              = "${var.project_name}-security-alerts"
+  kms_master_key_id = "alias/aws/sns"
 
   tags = {
     Project = var.project_name

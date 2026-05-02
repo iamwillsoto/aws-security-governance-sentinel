@@ -11,3 +11,5 @@ scan:
 misconfiguration:
   scanners:
     - terraform
+
+ignorefile: .trivyignore
