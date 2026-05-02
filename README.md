@@ -119,8 +119,12 @@ Production expansion paths include AWS Config custom rules, Security Hub integra
 
 ## Repository Structure
 
+```text
 aws-security-governance-sentinel/
-├── .github/workflows/security-iac.yaml
+├── .github/
+│   └── workflows/
+│       └── security-iac.yaml
+├── architecture/
 ├── infra/
 │   ├── cloudtrail.tf
 │   ├── cloudwatch.tf
@@ -139,6 +143,9 @@ aws-security-governance-sentinel/
 │   └── sentinel_remediator.py
 ├── policies/
 │   ├── opa/
+│   │   └── terraform-security.rego
 │   └── trivy.yaml
+├── validation-screenshots/
+├── .gitignore
 └── README.md
-
+```
