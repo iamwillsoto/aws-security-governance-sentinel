@@ -10,7 +10,7 @@ variable "project_name" {
   default     = "operation-sentinel"
 }
 
-variable "alert_email" {
-  description = "Email address subscribed to security alerts."
+variable "alert_phone_number" {
+  description = "Phone number subscribed to security alerts in E.164 format, such as +14015551234."
   type        = string
 }

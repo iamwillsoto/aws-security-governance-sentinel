@@ -59,6 +59,14 @@ resource "aws_iam_policy" "lambda_policy" {
           "sns:Publish"
         ]
         Resource = aws_sns_topic.alerts.arn
+      },
+      {
+        Sid    = "SendFailedEventsToDLQ"
+        Effect = "Allow"
+        Action = [
+          "sqs:SendMessage"
+        ]
+        Resource = aws_sqs_queue.lambda_dlq.arn
       }
     ]
   })

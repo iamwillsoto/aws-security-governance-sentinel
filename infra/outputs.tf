@@ -21,3 +21,15 @@ output "sns_topic_arn" {
 output "dashboard_name" {
   value = aws_cloudwatch_dashboard.sentinel.dashboard_name
 }
+
+output "lambda_dlq_name" {
+  value = aws_sqs_queue.lambda_dlq.name
+}
+
+output "eventbridge_dlq_name" {
+  value = aws_sqs_queue.eventbridge_dlq.name
+}
+
+output "account_public_access_block_enabled" {
+  value = true
+}

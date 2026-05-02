@@ -8,6 +8,10 @@ resource "aws_dynamodb_table" "audit" {
     type = "S"
   }
 
+  point_in_time_recovery {
+    enabled = true
+  }
+
   tags = {
     Project = var.project_name
     Purpose = "remediation-audit"

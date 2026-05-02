@@ -28,3 +28,87 @@ resource "aws_cloudwatch_dashboard" "sentinel" {
     ]
   })
 }
+
+resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
+  alarm_name          = "${var.project_name}-lambda-errors"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 0
+  alarm_description   = "Alerts when the Sentinel remediation Lambda records errors."
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+
+  dimensions = {
+    FunctionName = aws_lambda_function.remediator.function_name
+  }
+
+  tags = {
+    Project = var.project_name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "lambda_throttles" {
+  alarm_name          = "${var.project_name}-lambda-throttles"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Throttles"
+  namespace           = "AWS/Lambda"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 0
+  alarm_description   = "Alerts when the Sentinel remediation Lambda is throttled."
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+
+  dimensions = {
+    FunctionName = aws_lambda_function.remediator.function_name
+  }
+
+  tags = {
+    Project = var.project_name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "lambda_dlq_messages" {
+  alarm_name          = "${var.project_name}-lambda-dlq-messages"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  namespace           = "AWS/SQS"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 0
+  alarm_description   = "Alerts when failed Lambda remediation events appear in the DLQ."
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+
+  dimensions = {
+    QueueName = aws_sqs_queue.lambda_dlq.name
+  }
+
+  tags = {
+    Project = var.project_name
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "eventbridge_dlq_messages" {
+  alarm_name          = "${var.project_name}-eventbridge-dlq-messages"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "ApproximateNumberOfMessagesVisible"
+  namespace           = "AWS/SQS"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 0
+  alarm_description   = "Alerts when EventBridge failed delivery events appear in the DLQ."
+  alarm_actions       = [aws_sns_topic.alerts.arn]
+
+  dimensions = {
+    QueueName = aws_sqs_queue.eventbridge_dlq.name
+  }
+
+  tags = {
+    Project = var.project_name
+  }
+}

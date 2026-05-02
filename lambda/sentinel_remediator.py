@@ -23,6 +23,14 @@ def lambda_handler(event, context):
 
     detail = event.get("detail", {})
     event_name = detail.get("eventName", "Unknown")
+
+    if event_name == "PutBucketPublicAccessBlock":
+        print("Skipping PutBucketPublicAccessBlock to avoid remediation self-trigger loop.")
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"message": "Skipped self-remediation event."}),
+        }
+
     user_identity = detail.get("userIdentity", {})
     request_params = detail.get("requestParameters", {})
 

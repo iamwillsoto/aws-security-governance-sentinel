@@ -23,9 +23,25 @@ resource "aws_lambda_function" "remediator" {
     }
   }
 
-  depends_on = [aws_cloudwatch_log_group.lambda_logs]
+  depends_on = [
+    aws_cloudwatch_log_group.lambda_logs,
+    aws_iam_role_policy_attachment.lambda_attach
+  ]
 
   tags = {
     Project = var.project_name
+  }
+}
+
+resource "aws_lambda_function_event_invoke_config" "remediator_async_config" {
+  function_name = aws_lambda_function.remediator.function_name
+
+  maximum_retry_attempts       = 2
+  maximum_event_age_in_seconds = 3600
+
+  destination_config {
+    on_failure {
+      destination = aws_sqs_queue.lambda_dlq.arn
+    }
   }
 }

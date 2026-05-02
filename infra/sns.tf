@@ -7,8 +7,8 @@ resource "aws_sns_topic" "alerts" {
   }
 }
 
-resource "aws_sns_topic_subscription" "email" {
+resource "aws_sns_topic_subscription" "sms" {
   topic_arn = aws_sns_topic.alerts.arn
-  protocol  = "email"
-  endpoint  = var.alert_email
+  protocol  = "sms"
+  endpoint  = var.alert_phone_number
 }
