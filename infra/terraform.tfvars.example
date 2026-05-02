@@ -1,0 +1,3 @@
+aws_region  = "us-east-1"
+project_name = "operation-sentinel"
+alert_email = "your-email@example.com"

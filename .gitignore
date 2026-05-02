@@ -1,0 +1,72 @@
+# Terraform local files
+**/.terraform/*
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Terraform variable files with real values
+*.tfvars
+*.tfvars.json
+!terraform.tfvars.example
+
+# Terraform plan files
+*.tfplan
+plan.out
+tfplan
+
+# Lambda build artifacts
+*.zip
+infra/sentinel_remediator.zip
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Python virtual environments
+venv/
+.env/
+.venv/
+env/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# AWS local credentials/config
+.aws/
+credentials
+config
+
+# macOS system files
+.DS_Store
+**/.DS_Store
+
+# VS Code local workspace settings
+.vscode/
+!.vscode/extensions.json
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Local test files
+public-policy-test.json
+event-pattern.json
+eventbridge-test-event.json
+raw-cloudtrail-event.json
+
+# Screenshot folder junk
+validation-screenshots/.DS_Store
