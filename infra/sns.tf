@@ -1,6 +1,6 @@
 resource "aws_sns_topic" "alerts" {
   name              = "${var.project_name}-security-alerts"
-  kms_master_key_id = "alias/aws/sns"
+  kms_master_key_id = aws_kms_key.sentinel.arn
 
   tags = {
     Project = var.project_name

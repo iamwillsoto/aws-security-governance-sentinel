@@ -53,6 +53,18 @@ resource "aws_iam_policy" "lambda_policy" {
         Resource = aws_dynamodb_table.audit.arn
       },
       {
+        Sid    = "AllowKMSForEncryptedAuditAndTelemetry"
+        Effect = "Allow"
+
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey",
+          "kms:GenerateDataKeyWithoutPlaintext",
+          "kms:DescribeKey"
+        ]
+        Resource = aws_kms_key.sentinel.arn
+      },
+      {
         Sid    = "PublishAlerts"
         Effect = "Allow"
         Action = [

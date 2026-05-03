@@ -21,7 +21,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "cloudtrail_logs" 
 
   rule {
     apply_server_side_encryption_by_default {
-      sse_algorithm = "AES256"
+      sse_algorithm     = "aws:kms"
+      kms_master_key_id = aws_kms_key.sentinel.arn
     }
   }
 }
@@ -64,8 +65,11 @@ resource "aws_cloudtrail" "sentinel" {
   is_multi_region_trail         = true
   enable_logging                = true
   enable_log_file_validation    = true
+  kms_key_id                    = aws_kms_key.sentinel.arn
 
-  depends_on = [aws_s3_bucket_policy.cloudtrail_logs]
+  depends_on = [
+    aws_s3_bucket_policy.cloudtrail_logs
+  ]
 
   tags = {
     Project = var.project_name

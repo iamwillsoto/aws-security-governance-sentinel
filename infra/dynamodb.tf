@@ -12,6 +12,11 @@ resource "aws_dynamodb_table" "audit" {
     enabled = true
   }
 
+  server_side_encryption {
+    enabled     = true
+    kms_key_arn = aws_kms_key.sentinel.arn
+  }
+
   tags = {
     Project = var.project_name
     Purpose = "remediation-audit"

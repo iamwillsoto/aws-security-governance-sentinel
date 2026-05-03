@@ -1,7 +1,7 @@
 resource "aws_sqs_queue" "lambda_dlq" {
   name                      = "${var.project_name}-lambda-dlq"
   message_retention_seconds = 1209600
-  sqs_managed_sse_enabled   = true
+  kms_master_key_id         = aws_kms_key.sentinel.arn
 
   tags = {
     Project = var.project_name
@@ -12,7 +12,7 @@ resource "aws_sqs_queue" "lambda_dlq" {
 resource "aws_sqs_queue" "eventbridge_dlq" {
   name                      = "${var.project_name}-eventbridge-dlq"
   message_retention_seconds = 1209600
-  sqs_managed_sse_enabled   = true
+  kms_master_key_id         = aws_kms_key.sentinel.arn
 
   tags = {
     Project = var.project_name

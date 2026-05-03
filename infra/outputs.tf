@@ -33,3 +33,11 @@ output "eventbridge_dlq_name" {
 output "account_public_access_block_enabled" {
   value = true
 }
+
+output "kms_key_arn" {
+  value = aws_kms_key.sentinel.arn
+}
+
+output "kms_key_alias" {
+  value = aws_kms_alias.sentinel.name
+}

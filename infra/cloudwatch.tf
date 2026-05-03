@@ -1,6 +1,7 @@
 resource "aws_cloudwatch_log_group" "lambda_logs" {
   name              = "/aws/lambda/${var.project_name}-remediator"
   retention_in_days = 30
+  kms_key_id        = aws_kms_key.sentinel.arn
 
   tags = {
     Project = var.project_name
