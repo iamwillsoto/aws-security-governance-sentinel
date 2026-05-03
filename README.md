@@ -199,7 +199,6 @@ aws-security-governance-sentinel/
 │   ├── terraform.tfvars.example
 │   └── variables.tf
 ├── lambda/
-│   ├── requirements.txt
 │   └── sentinel_remediator.py
 ├── policies/
 │   ├── opa/
