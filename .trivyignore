@@ -1,2 +1,0 @@
-# Operation Sentinel uses AWS-managed encryption for this portfolio implementation.
-# Customer-managed KMS keys are documented as a production hardening enhancement.
