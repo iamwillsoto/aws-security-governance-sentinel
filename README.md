@@ -44,7 +44,7 @@ Risky S3 API call
 | Observability | Amazon CloudWatch Logs, Dashboard, Alarms |
 | Resilience | Amazon SQS DLQs, EventBridge retry policy, Lambda async failure destination |
 | Encryption | AWS KMS customer-managed key |
-| Governance | Terraform, GitHub Actions, Trivy, OPA/Rego policy examples |
+| Governance | Terraform, GitHub Actions, Trivy |
 
 ---
 
@@ -124,9 +124,7 @@ The full platform is defined in Terraform. The GitHub Actions CI workflow valida
 2. `terraform init` + `terraform validate` — configuration integrity
 3. `trivy` — infrastructure-as-code security scanning through `policies/trivy.yaml`
 
-The repository also includes OPA/Rego policy examples in `policies/opa/terraform-security.rego` to document governance intent for S3 public access and CloudWatch retention controls.
-
-Trivy is the active scanner in the current CI workflow. The Rego policies are structured for future Conftest integration.
+Trivy is the active infrastructure-as-code scanner in the CI workflow.
 
 ---
 
@@ -201,7 +199,6 @@ aws-security-governance-sentinel/
 ├── lambda/
 │   └── sentinel_remediator.py
 ├── policies/
-│   ├── opa/
 │   │   └── terraform-security.rego
 │   └── trivy.yaml
 ├── validation-screenshots/
@@ -231,4 +228,3 @@ The project validates practical experience with:
 - Terraform infrastructure deployment
 - GitHub Actions CI validation
 - Trivy IaC scanning
-- OPA/Rego policy-as-code structure
