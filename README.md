@@ -20,16 +20,6 @@ The system detects risky S3 public access changes, restores the required storage
 
 ![Operation Sentinel Architecture](architecture/operation-sentinel-architecture.png)
 
-```text
-Risky S3 API call
-→ CloudTrail captures the event
-→ EventBridge matches the S3 risk pattern
-→ Lambda restores S3 Block Public Access
-→ DynamoDB records audit evidence
-→ SNS sends an SMS alert
-→ CloudWatch provides logs, alarms, and dashboard visibility
-```
-
 ---
 
 ## Stack
@@ -124,7 +114,7 @@ The full platform is defined in Terraform. The GitHub Actions CI workflow valida
 2. `terraform init` + `terraform validate` — configuration integrity
 3. `trivy` — infrastructure-as-code security scanning through `policies/trivy.yaml`
 
-Trivy is the active infrastructure-as-code scanner in the CI workflow.
+Trivy is the active infrastructure-as-code scanner in the CI workflow, and the final scan passes without active KMS exceptions.
 
 ---
 
@@ -182,6 +172,7 @@ aws-security-governance-sentinel/
 ├── architecture/
 │   └── operation-sentinel-architecture.png
 ├── infra/
+│   ├── .terraform.lock.hcl
 │   ├── cloudtrail.tf
 │   ├── cloudwatch.tf
 │   ├── dynamodb.tf
@@ -199,11 +190,9 @@ aws-security-governance-sentinel/
 ├── lambda/
 │   └── sentinel_remediator.py
 ├── policies/
-│   │   └── terraform-security.rego
 │   └── trivy.yaml
 ├── validation-screenshots/
 ├── .gitignore
-├── .trivyignore
 └── README.md
 ```
 
